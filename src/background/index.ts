@@ -45,7 +45,7 @@ chrome.action.onClicked.addListener(async (tab) => {
     if (!tab.url) return;
     const active = getData(tab.id, ["active"]).active;
     if (!active)
-        chrome.sidePanel.open({ windowId: tab.windowId });
+        await chrome.sidePanel.open({windowId: tab.windowId});
     else if (active) {
         await chrome.sidePanel.setOptions({ tabId: tab.id, enabled: false });
         await chrome.sidePanel.setOptions({ tabId: tab.id, path: 'sidepanel.html?tabId='+tab.id, enabled: true });

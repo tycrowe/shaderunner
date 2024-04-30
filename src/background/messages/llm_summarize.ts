@@ -4,6 +4,9 @@ import { OpenAI } from "langchain/llms/openai";
 import { Storage } from "@plasmohq/storage"
 import { getCurrentModel } from "~llm_classify_prompt";
 import { ChatPromptTemplate } from "langchain/prompts";
+import type { ChatPromptValue } from "langchain/dist/prompts/chat";
+import type { RunnableLike } from "langchain/dist/schema/runnable";
+
 const storage = new Storage()
 
 
@@ -15,23 +18,22 @@ function splitMarkdownList(markdown) {
 }
 
 
-
-const llmSummarize = async (texts: string) => {
+const llmSummarize = async (texts: string[]) => {
   const api_key = await storage.get("OPENAI_API_KEY");
   const openchat_api_base = await storage.get("OPENCHAT_API_BASE");
 
-  const { model, temperature, chat } = await getCurrentModel();
+  const {model, temperature, chat} = await getCurrentModel();
 
   console.log("using llm:", model, "with temperature", temperature, "as", chat ? "chat model" : "instruct model")
   const llm_params = {
     temperature: temperature,
     modelName: model,
     //verbose: true,
-    ...(model.startsWith("gpt-") ? { openAIApiKey: api_key } : { openAIApiKey: "EMPTY" })
+    ...(model.startsWith("gpt-") ? {openAIApiKey: api_key} : {openAIApiKey: "EMPTY"})
   }
-  const llm_config = model.startsWith("gpt-") ? null : { baseURL: openchat_api_base, modelName: model }
+  const llm_config = model.startsWith("gpt-") ? null : {baseURL: openchat_api_base, modelName: model}
 
-  let llm, llmResult;
+  let llm: RunnableLike<ChatPromptValue, unknown>, llmResult;
   try {
     llm = chat ? new ChatOpenAI(llm_params, llm_config) : new OpenAI(llm_params, llm_config)
   } catch (e) {
@@ -79,7 +81,7 @@ Transformed HTML:
       ["human", "{text}"],
     ])
     const chain = promptTemplate.pipe(llm);
-    const llmResults = await chain.batch(texts.map(t => ({text: t})));
+    const llmResults = await chain.batch(texts.map(text => ({ text }))) as { content: string }[];
     return llmResults.map(result => result.content)
   }
 }

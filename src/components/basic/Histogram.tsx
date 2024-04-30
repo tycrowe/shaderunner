@@ -68,7 +68,6 @@ const Histogram = ({ scores, lines }) => {
 
   // Options for react-chartjs-2
   const options = {
-    indexAxis: 'x',
     scales: {
       y: {
         beginAtZero: true,

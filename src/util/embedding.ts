@@ -72,7 +72,10 @@ const getPageEmbeddings = async (mainelement: HTMLElement, url: string, mode = "
 
 
 
-function VectorStore_fromClass2Embedding(class2Embedding: { [s: string]: Number[]; } | ArrayLike<unknown>) {
+function VectorStore_fromClass2Embedding(class2Embedding: { [s: string]: any; } | ArrayLike<{
+    content: string;
+    embedding: Number[];
+}>) {
   const embeddings = Object.entries(class2Embedding).map(([content, embedding]) => ({content, embedding}))
   const classStore = new MemoryVectorStore(embeddings as any);
   classStore.memoryVectors = Object.values(embeddings) as any;

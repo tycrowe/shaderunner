@@ -65,6 +65,8 @@ export const getCurrentModel = async () => {
         model: gptversion,
         chat: chatgpt,
         temperature: gpttemperature,
+        prompt: "",
+        name: ""
     }
 }
 

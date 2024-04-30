@@ -41,9 +41,10 @@ const MergedBarPlot = ({ experiment, resultsData }) => {
     maintainsAspectRatio: true,
     aspectRatio: 4,
     plugins: {
-      legend: {
-        position: 'right', // Positioning the legend on the right
-      },
+        legend: {
+            display: true,
+            position: 'right' as const,
+        }
     },
   };
 

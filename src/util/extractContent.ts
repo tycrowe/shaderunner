@@ -38,7 +38,7 @@ const mapSplitsToTextnodes = (splits: string[], element: HTMLElement, lookAheadA
   let textNodes = [];
   let nodePositions = [];
   let currentTextLength = 0;
-  const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
+  const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null);
   let node;
   while (node = walker.nextNode()) {
 

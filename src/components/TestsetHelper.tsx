@@ -23,9 +23,12 @@ const TestsetHelper = ({tabId}) => {
 
         // Add an event listener to the whole document
         document.addEventListener('click', function (event) {
-            if (!event.target.closest('.shaderunner-highlight')) {
-                event.preventDefault();
-                event.stopPropagation();
+            // Trigger event if the target is not a child of the element
+            if (event.target instanceof Element) {
+                if (!event.target.closest('.shaderunner-highlight')) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
             }
         }, true); // Use capture to ensure the event is captured in the capturing phase
 
