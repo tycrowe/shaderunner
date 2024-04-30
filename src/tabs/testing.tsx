@@ -199,14 +199,14 @@ function TestingPage() {
     const results = await Promise.all(testData.map(experiment => processExperiment(experiment)));
 
     // send results to server
-    setProgress("saving results")
+    setProgress(<span>Saving results to server.</span>);
     await sendToBackground({ name: "testsethelper", body: { cmd: "saveresults", model: model, results: Object.fromEntries(results) } })
 
     // update state with newest results
     setResultsData(await sendToBackground({ name: "testsethelper", body: { cmd: "getresults" } }))
 
     // Final status update
-    setProgress(`All experiments completed in ${formatElapsedTime(startTime, new Date())}.`);
+    setProgress(<span>All experiments completed in {formatElapsedTime(startTime, new Date())}.</span>);
   }
 
   if (!testData) return "";

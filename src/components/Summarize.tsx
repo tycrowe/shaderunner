@@ -9,7 +9,7 @@ import useEffectWhenReady from '~util/useEffectWhenReady';
 
 const Summarize = ({tabId}) => {
     const [[active], [summarizeParagraphs], [, setStatusSummarize], [, isSynced]] = useGlobalStorage(tabId, "active", "summarizeParagraphs", "statusSummarize");
-    const [summaryInitalized, setSummaryInitalized] = useState(false);
+    const [summaryInitialized, setSummaryInitialized] = useState({ splits: []});
 
     // show/hide 
     useEffectWhenReady([isSynced], () => {
@@ -24,8 +24,8 @@ const Summarize = ({tabId}) => {
     useEffectWhenReady([isSynced, tabId, active, summarizeParagraphs], () => {initializeSummaryElements()}, []);
 
     // summarize if requested by user
-    useEffectWhenReady([summaryInitalized], async () => {
-        const splits = summaryInitalized.splits;
+    useEffectWhenReady([summaryInitialized], async () => {
+        const splits = summaryInitialized.splits;
 
         async function summarize_and_replace_batch(batch, startIndex) {
             const summaries = await sendToBackground({ name: "llm_summarize", body: { texts: batch } })
@@ -58,7 +58,7 @@ const Summarize = ({tabId}) => {
 
 
     const initializeSummaryElements = async () => {
-        if (summaryInitalized) return;
+        if (summaryInitialized) return;
         const mainel = getMainContent();
         console.log("blub")
         let elements;
@@ -97,7 +97,7 @@ const Summarize = ({tabId}) => {
             pElement.classList.add("original-text")
         });
 
-        setSummaryInitalized({ splits });
+        setSummaryInitialized({ splits });
     };
 
     return "";

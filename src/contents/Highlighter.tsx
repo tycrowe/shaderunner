@@ -37,7 +37,7 @@ const Highlighter = () => {
     [savedHighlightQuery],
     [setGlobalStorage, isSynced]
   ] = useGlobalStorage(tabId, "active", "url", "status_embedding", "status_highlight", "status_classifier", "classEmbeddings", "highlightAmount", "decisionEps", "highlightRetrieval", "highlightClassify", "retrievalK", "classifierData", "savedHighlightQuery");
-  const [pageEmbeddings, setPageEmbeddings] = useState({ mode: "sentences", splits: [], splitEmbeddings: {} });
+  const [pageEmbeddings, setPageEmbeddings] = useState({ mode: "sentences", splits: [], splitEmbeddings: {}, finished: false});
   const [isHighlightRunning, setIsHighlightRunning] = useState(false);
   const queuedHighlightRef = useRef(false);
   const classifierDataStr = JSON.stringify(classifierData);
@@ -184,6 +184,7 @@ const Highlighter = () => {
     const class2Id = Object.fromEntries(allclasses.map((c, i) => [c, i]))
     const classStore = VectorStore_fromClass2Embedding(Object.fromEntries(Object.entries(classEmbeddings).filter(([c]) => !classes_retrieval.includes(c))))
     allclasses.push(...classes_retrieval)
+
 
     // ensure we have embedded the page contents
     let { splits, splitEmbeddings } = pageEmbeddings;

@@ -103,22 +103,44 @@ export async function llm2classes_batchwise(inputs: {url: string, title: string,
       console.log(llmResult)
       parsed = parseInput(llmResult)
     } else {
-      const promptTemplate = ChatPromptTemplate.fromMessages([
-        ["system", SYSTEM],
-        ["human", USER],
-      ])
-      const chain = promptTemplate.pipe(llm);
-      const llmResults = await chain.batch(inputs);
-      console.log(llmResults)
-      return llmResults.map(result => {
-        parsed = parseInput(result.content)
-        return {
-          "scope": parsed[0],
-          "thought": parsed.slice(1, -2).join(" "),
-          "classes_pos": parsed[parsed.length - 2],
-          "classes_neg": parsed[parsed.length - 1]
+        const promptTemplate = ChatPromptTemplate.fromMessages([
+            ["system", SYSTEM],
+            ["human", USER],
+        ])
+        let llmResults: any;
+
+        if (llm instanceof ChatOpenAI) {
+            const chain = promptTemplate.pipe(llm);
+            const llmResults = await chain.batch(inputs.map(input => [input.url, input.title, input.query])) as {content: string}[];
+            llmResults.map(result => {
+                parsed = parseInput(result.content)
+                return {
+                    "scope": parsed[0],
+                    "thought": parsed.slice(1, -2).join(" "),
+                    "classes_pos": parsed[parsed.length - 2],
+                    "classes_neg": parsed[parsed.length - 1]
+                }
+            });
+        } else {
+            const chain = promptTemplate.pipe(llm);
+            const llmResults = await chain.batch(inputs.map(input => [input.url, input.title, input.query])) as string[];
+            llmResults.map(result => {
+                parsed = parseInput(result)
+                return {
+                    "scope": parsed[0],
+                    "thought": parsed.slice(1, -2).join(" "),
+                    "classes_pos": parsed[parsed.length - 2],
+                    "classes_neg": parsed[parsed.length - 1]
+                }
+            });
         }
-      })
+
+        // ensure we have results
+        if (!llmResults) {
+            throw new Error("No results from LLM")
+        }
+
+        return llmResults;
     }
 }
 
